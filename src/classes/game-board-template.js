@@ -79,6 +79,7 @@ export default class GameBoard {
         if (!Array.isArray(coordArr) || coordArr.length !== 2)
             throw new Error('invalid coord provided to receive attack');
         const [y, x] = coordArr;
+        if (y > 10 || y < 0 || x > 10 || x < 0) throw new Error("index out of range to receive attack");
         const square = this.#board[y][x];
         // call ship hit function to increase hit counter
         if (square.shipPointer instanceof Ship) square.shipPointer.hit();
@@ -87,9 +88,9 @@ export default class GameBoard {
     }
 
     /*
-    return an array of arrays containing
-    each array(item) will be a different ship
-    containing all its occurence along board
+    return an array of arrays containing each coordArr
+    Array 3d, an array containing arrays that group coordArr
+    the coords are grouped by ship reference
     */
     getAllShipCoord() {
         const shipsCoord = [];
@@ -122,6 +123,18 @@ export default class GameBoard {
             }
         }
         return shipsCoord;
+    }
+
+    /* return array of array of all squares coords*/
+    getAllHit() {
+        const hit = [];
+        for (let line = 0; line <= 9; line++) {
+            for (let column = 0; column <= 9; column++) {
+                const square = this.#board[line][column];
+                if (square.isHit) hit.push([line,column]);
+            }
+        }
+        return hit;
     }
 
     /* debug && test purpose */

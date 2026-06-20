@@ -107,4 +107,17 @@ describe('test receive attack', () => {
             ].sort()
         );
     });
+
+    test('get all hit squares', () => {
+        gameBoard.receiveAttack([1,1]);
+        gameBoard.receiveAttack([1,4]);
+        gameBoard.receiveAttack([7,8]);
+        const received = gameBoard.getAllHit();
+        const expected = [
+            [1,1],
+            [1,4],
+            [7,8],
+        ];
+        expect([...received].sort()).toEqual([...expected].sort());
+    })
 });
