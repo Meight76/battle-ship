@@ -2,35 +2,34 @@ import path from 'node:path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 export default {
-    entry: "./src/index.js",
+    entry: './src/index.js',
     output: {
-        filename: "main.js",
-        path: path.resolve(import.meta.dirname, "dist"),
+        filename: 'main.js',
+        path: path.resolve(import.meta.dirname, 'dist'),
         clean: true,
     },
     devServer: {
-        watchFiles: ["./src/template.html"],
+        watchFiles: ['./src/template.html'],
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: "./src/template.html",
+            template: './src/template.html',
         }),
     ],
     module: {
         rules: [
             {
                 test: /\.css$/i,
-                use: ["style-loader", "css-loader"],
+                use: ['style-loader', 'css-loader'],
             },
             {
                 test: /\.html$/i,
-                use: ["html-loader"],
+                use: ['html-loader'],
             },
             {
                 test: /\.(png|svg|gif|jpeg|jpg)$/i,
-                type: "asset/resource",
+                type: 'asset/resource',
             },
         ],
     },
-
-}
+};
