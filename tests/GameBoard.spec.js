@@ -78,4 +78,33 @@ describe('test receive attack', () => {
             }
         }
     });
+
+    test('get all ship occupied squares', () => {
+        gameBoard.placeShip(5, [2, 3], 'h');
+        gameBoard.placeShip(2, [8, 8], 'v');
+        gameBoard.placeShip(4, [4, 4], 'h');
+        const shipCoord = gameBoard.getAllShipCoord();
+        expect(shipCoord.length).toBe(3);
+        expect(shipCoord.sort()).toEqual(
+            [
+                [
+                    [2, 3],
+                    [2, 4],
+                    [2, 5],
+                    [2, 6],
+                    [2, 7],
+                ],
+                [
+                    [8, 8],
+                    [9, 8],
+                ],
+                [
+                    [4, 4],
+                    [4, 5],
+                    [4, 6],
+                    [4, 7],
+                ],
+            ].sort()
+        );
+    });
 });

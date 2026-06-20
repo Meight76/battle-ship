@@ -86,6 +86,44 @@ export default class GameBoard {
         square.hit();
     }
 
+    /*
+    return an array of arrays containing
+    each array(item) will be a different ship
+    containing all its occurence along board
+    */
+    getAllShipCoord() {
+        const shipsCoord = [];
+
+        /* iterate through all squares looking for one that points to a ship*/
+        for (let line = 0; line <= 9; line++) {
+            for (let column = 0; column <= 9; column++) {
+                const sqr = this.#board[line][column];
+                // if it doesn't point to ship continue
+                if (!(sqr.shipPointer instanceof Ship)) continue;
+                // declare variable to keep track of any occurence already in the array
+                let isShipRef = false;
+
+                /* search for any occurence in shipsCoord
+                   if found any you just push coord into it
+                   and flag isShipRef with true */
+                shipsCoord.map((cArr) => {
+                    if (
+                        this.getSquare(cArr[0]).shipPointer === sqr.shipPointer
+                    ) {
+                        cArr.push([line, column]);
+                        isShipRef = true;
+                    }
+                });
+                /* if it's not found any occurence then it can only be
+                   the first one and must be pushed directly into array */
+                if (!isShipRef) {
+                    shipsCoord.push([[line, column]]);
+                }
+            }
+        }
+        return shipsCoord;
+    }
+
     /* debug && test purpose */
     getSquare(coordArr) {
         if (!Array.isArray(coordArr))
