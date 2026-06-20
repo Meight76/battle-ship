@@ -3,9 +3,11 @@ import Ship from './ship-template.js';
 
 export default class GameBoard {
     #board = '';
+    #ships = '';
+    #Attacks = '';
     constructor() {
-        // the number false means "no hit" true means "hit"
-        // the board will only contain info about hits, not loc of ships
+        this.#ships = [];
+        this.#Attacks = [];
         this.#board = this.#initializeBoard();
     }
 
@@ -41,6 +43,7 @@ export default class GameBoard {
             throw new Error('invalid axe provided');
         const shipObj = new Ship(shipLengh);
         const touchedSquares = [];
+        const newShipCoord = [];
 
         // mark all the vertical with the reference to shipObj
         if (axeMode.charAt(0).toLowerCase() === 'v') {
@@ -53,6 +56,7 @@ export default class GameBoard {
                     throw new Error('space already contain ship');
                 }
                 boardSqr.shipPointer = shipObj;
+                newShipCoord.push([y + v, x]);
                 touchedSquares.push(boardSqr);
             }
             // mark all the horizontal with reference to shipObj
@@ -66,12 +70,14 @@ export default class GameBoard {
                     throw new Error('space already contain ship');
                 }
                 boardSqr.shipPointer = shipObj;
+                newShipCoord.push([y, x + h]);
                 touchedSquares.push(boardSqr);
             }
             // invalid axe mode
         } else {
             throw new Error('axe mode is not provided');
         }
+        if (newShipCoord.length !== 0) this.#ships.push(newShipCoord);
     }
 
     /* remember coords = [y, x] */
@@ -82,8 +88,11 @@ export default class GameBoard {
         if (y > 10 || y < 0 || x > 10 || x < 0) throw new Error("index out of range to receive attack");
         const square = this.#board[y][x];
         // call ship hit function to increase hit counter
-        if (square.shipPointer instanceof Ship) square.shipPointer.hit();
+        if (square.shipPointer instanceof Ship) {
+            square.shipPointer.hit();
+        }
         // call square hit function to declare it as hit
+        this.#Attacks.push(coordArr);
         square.hit();
     }
 
@@ -92,7 +101,7 @@ export default class GameBoard {
     Array 3d, an array containing arrays that group coordArr
     the coords are grouped by ship reference
     */
-    getAllShipCoord() {
+    searchAllShipCoord() {
         const shipsCoord = [];
 
         /* iterate through all squares looking for one that points to a ship*/
@@ -122,11 +131,12 @@ export default class GameBoard {
                 }
             }
         }
+        this.#ships = shipsCoord;
         return shipsCoord;
     }
 
     /* return array of array of all squares coords*/
-    getAllHit() {
+    searchAllHits() {
         const hit = [];
         for (let line = 0; line <= 9; line++) {
             for (let column = 0; column <= 9; column++) {
@@ -134,7 +144,16 @@ export default class GameBoard {
                 if (square.isHit) hit.push([line,column]);
             }
         }
+        this.#Attacks = hit;
         return hit;
+    }
+
+    getHits() {
+        return this.#Attacks;
+    }
+
+    getShips() {
+        return this.#ships;
     }
 
     /* debug && test purpose */

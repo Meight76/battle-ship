@@ -83,7 +83,7 @@ describe('test receive attack', () => {
         gameBoard.placeShip(5, [2, 3], 'h');
         gameBoard.placeShip(2, [8, 8], 'v');
         gameBoard.placeShip(4, [4, 4], 'h');
-        const shipCoord = gameBoard.getAllShipCoord();
+        const shipCoord = gameBoard.getShips();
         expect(shipCoord.length).toBe(3);
         expect(shipCoord.sort()).toEqual(
             [
@@ -112,7 +112,7 @@ describe('test receive attack', () => {
         gameBoard.receiveAttack([1,1]);
         gameBoard.receiveAttack([1,4]);
         gameBoard.receiveAttack([7,8]);
-        const received = gameBoard.getAllHit();
+        const received = gameBoard.getHits();
         const expected = [
             [1,1],
             [1,4],
