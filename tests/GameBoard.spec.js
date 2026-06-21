@@ -37,6 +37,24 @@ describe('test placement for ships', () => {
         expect(() => gameBoard.placeShip(5, [7, 7], 'v')).toThrow();
         expect(() => gameBoard.placeShip(3, [8, 9], 'h')).toThrow();
     });
+
+    test('abort ship placement', () => {
+        expect(() => {
+            gameBoard.placeShip(3, [4, 5], 'h');
+            gameBoard.placeShip(2, [3, 5], 'v');
+            gameBoard.placeShip(5, [4, 3], 'h');
+        }).toThrow();
+
+        const expected = [
+            [
+                [4, 5],
+                [4, 6],
+                [4, 7],
+            ],
+        ];
+        expect(gameBoard.getShips().length).toBe(1);
+        expect(gameBoard.getShips().sort()).toEqual([...expected].sort());
+    });
 });
 
 describe('test receive attack', () => {
@@ -108,16 +126,67 @@ describe('test receive attack', () => {
         );
     });
 
+    test('attack same square two times', () => {
+        gameBoard.placeShip(3, [1, 1], 'v');
+        gameBoard.receiveAttack([1, 1]);
+        expect(() => gameBoard.receiveAttack([1, 1])).toThrow();
+        expect(gameBoard.getSquare([1, 1]).shipPointer.timesHit).toBe(1);
+    });
+
+    test('missed attacks', () => {
+        gameBoard.placeShip(3, [1, 1], 'v');
+        gameBoard.receiveAttack([1, 9]);
+        expect(gameBoard.getMissedAttacks().length).toBe(1);
+        gameBoard.receiveAttack([2, 3]);
+        expect(gameBoard.getMissedAttacks().length).toBe(2);
+        gameBoard.receiveAttack([2, 4]);
+        expect(gameBoard.getMissedAttacks().length).toBe(3);
+
+        const expected = [
+            [1, 9],
+            [2, 3],
+            [2, 4],
+        ];
+        expect(gameBoard.getMissedAttacks().sort()).toEqual(
+            [...expected].sort()
+        );
+    });
+
+    test('attack invalid index', () => {
+        expect(() => gameBoard.receiveAttack([-1, -1])).toThrow(
+            'index out of range to receive attack'
+        );
+        expect(() => gameBoard.receiveAttack([0.5, 0.3])).toThrow(
+            'coords must be integers'
+        );
+        expect(() => gameBoard.receiveAttack(['s', 'c'])).toThrow(
+            'coords must be integers'
+        );
+    });
+
     test('get all hit squares', () => {
-        gameBoard.receiveAttack([1,1]);
-        gameBoard.receiveAttack([1,4]);
-        gameBoard.receiveAttack([7,8]);
+        gameBoard.receiveAttack([1, 1]);
+        gameBoard.receiveAttack([1, 4]);
+        gameBoard.receiveAttack([7, 8]);
         const received = gameBoard.getHits();
         const expected = [
-            [1,1],
-            [1,4],
-            [7,8],
+            [1, 1],
+            [1, 4],
+            [7, 8],
         ];
         expect([...received].sort()).toEqual([...expected].sort());
-    })
+    });
+
+    test('is all sunk', () => {
+        gameBoard.placeShip(3, [4, 5], 'h');
+        gameBoard.placeShip(2, [2, 1], 'v');
+
+        gameBoard.receiveAttack([4, 5]);
+        gameBoard.receiveAttack([4, 6]);
+        gameBoard.receiveAttack([4, 7]);
+        gameBoard.receiveAttack([2, 1]);
+        expect(gameBoard.isAllSunk()).not.toBeTruthy();
+        gameBoard.receiveAttack([3, 1]);
+        expect(gameBoard.isAllSunk()).toBeTruthy();
+    });
 });

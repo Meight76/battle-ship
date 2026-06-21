@@ -18,6 +18,10 @@ export default class Square {
         return this.#ship;
     }
 
+    resetShip() {
+        this.#ship = null;
+    }
+
     get isHit() {
         return this.#isHit;
     }

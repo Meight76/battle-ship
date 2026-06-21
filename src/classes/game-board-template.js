@@ -4,10 +4,10 @@ import Ship from './ship-template.js';
 export default class GameBoard {
     #board = '';
     #ships = '';
-    #Attacks = '';
+    #attacks = '';
     constructor() {
         this.#ships = [];
-        this.#Attacks = [];
+        this.#attacks = [];
         this.#board = this.#initializeBoard();
     }
 
@@ -20,16 +20,21 @@ export default class GameBoard {
 
     #abortPlaceShip(touchedSquaresArr) {
         for (const sqr of touchedSquaresArr) {
-            sqr.ship = null;
+            sqr.resetShip();
         }
     }
 
     // coord = [line, column] or [y, x]
     // axeMode = "v || V" for vertical and "h || H" for horizontal
     // h moves column, v moves line ([line, column])
-    placeShip(shipLengh, coordArr, axeMode) {
+    placeShip(shipLength, coordArr, axeMode) {
         // check if ship is the correct object
-        if (!shipLengh) throw new Error("can't deploy a ship with no length");
+        if (!shipLength) throw new Error("can't deploy a ship with no length");
+        if (
+            !Number.isInteger(shipLength) ||
+            !(shipLength > 0 && shipLength < 6)
+        )
+            throw new Error('Invalid ship length');
         // check if coord are valid
         if (!Array.isArray(coordArr) || coordArr.length !== 2)
             throw new Error('invalid coord for deploy');
@@ -41,13 +46,13 @@ export default class GameBoard {
         // check if mode is string
         if (typeof axeMode !== 'string')
             throw new Error('invalid axe provided');
-        const shipObj = new Ship(shipLengh);
+        const shipObj = new Ship(shipLength);
         const touchedSquares = [];
         const newShipCoord = [];
 
         // mark all the vertical with the reference to shipObj
         if (axeMode.charAt(0).toLowerCase() === 'v') {
-            if (x + shipObj.length > 10)
+            if (y + shipObj.length > 10)
                 throw new Error('not enough space to fit vertically ship');
             for (let v = 0; v < shipObj.length; v++) {
                 const boardSqr = this.#board[y + v][x];
@@ -61,7 +66,7 @@ export default class GameBoard {
             }
             // mark all the horizontal with reference to shipObj
         } else if (axeMode.charAt(0).toLowerCase() === 'h') {
-            if (y + shipObj.length > 10)
+            if (x + shipObj.length > 10)
                 throw new Error('not enough space to fit horizontally');
             for (let h = 0; h < shipObj.length; h++) {
                 const boardSqr = this.#board[y][x + h];
@@ -85,14 +90,19 @@ export default class GameBoard {
         if (!Array.isArray(coordArr) || coordArr.length !== 2)
             throw new Error('invalid coord provided to receive attack');
         const [y, x] = coordArr;
-        if (y > 10 || y < 0 || x > 10 || x < 0) throw new Error("index out of range to receive attack");
+        if (!Number.isInteger(y) || !Number.isInteger(x))
+            throw new Error('coords must be integers');
+        if (y > 10 || y < 0 || x > 10 || x < 0)
+            throw new Error('index out of range to receive attack');
         const square = this.#board[y][x];
+        if (square.isHit)
+            throw new Error('cannot attack the same square more than once');
         // call ship hit function to increase hit counter
         if (square.shipPointer instanceof Ship) {
             square.shipPointer.hit();
         }
         // call square hit function to declare it as hit
-        this.#Attacks.push(coordArr);
+        this.#attacks.push(coordArr);
         square.hit();
     }
 
@@ -141,22 +151,48 @@ export default class GameBoard {
         for (let line = 0; line <= 9; line++) {
             for (let column = 0; column <= 9; column++) {
                 const square = this.#board[line][column];
-                if (square.isHit) hit.push([line,column]);
+                if (square.isHit) hit.push([line, column]);
             }
         }
-        this.#Attacks = hit;
+        this.#attacks = hit;
         return hit;
     }
 
     getHits() {
-        return this.#Attacks;
+        return this.#attacks;
     }
 
     getShips() {
         return this.#ships;
     }
 
-    /* debug && test purpose */
+    getMissedAttacks() {
+        const missed = [];
+        /* #attacks = [[],[],[]] array 2d containg all coord that received attack */
+        for (const c of this.#attacks) {
+            const sqr = this.getSquare(c);
+            if (sqr.shipPointer) continue;
+            missed.push(c);
+        }
+        return missed;
+    }
+
+    /*loop through all group of ship Coord get data from them, check if they sunk
+    if the number of ships and number of sunks are the same then return true else false */
+    isAllSunk() {
+        /* s = [[],[],[]] array 2d, containg all the coords that reference that ship*/
+        const ships = this.#ships;
+        const howManyShips = ships.length;
+        let sunkCount = 0;
+        for (const s of ships) {
+            const shipLength = s.length;
+            const manyHits = this.getSquare(s[0]).shipPointer.timesHit;
+            if (manyHits === shipLength) sunkCount++;
+        }
+        if (sunkCount === howManyShips) return true;
+        return false;
+    }
+
     getSquare(coordArr) {
         if (!Array.isArray(coordArr))
             throw new Error('invalid coord array to retrieve square');
@@ -165,6 +201,8 @@ export default class GameBoard {
 
         return this.#board[y][x];
     }
+
+    /* debug && test purpose */
 
     visualizeBoard() {
         for (const row of this.#board) {
