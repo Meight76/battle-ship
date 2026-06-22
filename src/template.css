@@ -158,6 +158,27 @@ body {
 
 .boards-section {
     grid-area: boards;
+    position: relative;
+    display: grid;
+    grid-template-columns: subgrid;
+
+    .board-1,
+    .board-2 {
+        justify-self: center;
+        border-radius: 8px;
+        width: 30vw;
+        background-color: var(--white-300);
+    }
+}
+
+.boards-section::after {
+    content: "";
+    position: absolute;
+    bottom: -20px;
+    left: 49.4%;
+    width: 2px;
+    background-color: red;
+    height: 50vh;
 }
 
 .player-info {
