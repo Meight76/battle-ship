@@ -1,4 +1,4 @@
-import GameBoard from "./game-board-template.js";
+import GameBoard from './game-board-template.js';
 
 export default class Player {
     constructor() {
