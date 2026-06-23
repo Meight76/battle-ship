@@ -47,9 +47,9 @@ describe('test placement for ships', () => {
 
         const expected = [
             [
-                [4, 5],
-                [4, 6],
-                [4, 7],
+                "4,5",
+                "4,6",
+                "4,7"
             ],
         ];
         expect(gameBoard.getShips().length).toBe(1);
@@ -106,21 +106,21 @@ describe('test receive attack', () => {
         expect(shipCoord.sort()).toEqual(
             [
                 [
-                    [2, 3],
-                    [2, 4],
-                    [2, 5],
-                    [2, 6],
-                    [2, 7],
+                    "2,3",
+                    "2,4",
+                    "2,5",
+                    "2,6",
+                    "2,7"
                 ],
                 [
-                    [8, 8],
-                    [9, 8],
+                    "8,8",
+                    "9,8"
                 ],
                 [
-                    [4, 4],
-                    [4, 5],
-                    [4, 6],
-                    [4, 7],
+                    "4,4",
+                    "4,5",
+                    "4,6",
+                    "4,7"
                 ],
             ].sort()
         );
@@ -143,9 +143,9 @@ describe('test receive attack', () => {
         expect(gameBoard.getMissedAttacks().length).toBe(3);
 
         const expected = [
-            [1, 9],
-            [2, 3],
-            [2, 4],
+            "1,9",
+            "2,3",
+            "2,4"
         ];
         expect(gameBoard.getMissedAttacks().sort()).toEqual(
             [...expected].sort()
@@ -170,9 +170,9 @@ describe('test receive attack', () => {
         gameBoard.receiveAttack([7, 8]);
         const received = gameBoard.getHits();
         const expected = [
-            [1, 1],
-            [1, 4],
-            [7, 8],
+            "1,1",
+            "1,4",
+            "7,8"
         ];
         expect([...received].sort()).toEqual([...expected].sort());
     });

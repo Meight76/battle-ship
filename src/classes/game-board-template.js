@@ -61,7 +61,7 @@ export default class GameBoard {
                     throw new Error('space already contain ship');
                 }
                 boardSqr.shipPointer = shipObj;
-                newShipCoord.push([y + v, x]);
+                newShipCoord.push([y + v, x].toString());
                 touchedSquares.push(boardSqr);
             }
             // mark all the horizontal with reference to shipObj
@@ -75,7 +75,7 @@ export default class GameBoard {
                     throw new Error('space already contain ship');
                 }
                 boardSqr.shipPointer = shipObj;
-                newShipCoord.push([y, x + h]);
+                newShipCoord.push([y, x + h].toString());
                 touchedSquares.push(boardSqr);
             }
             // invalid axe mode
@@ -102,7 +102,7 @@ export default class GameBoard {
             square.shipPointer.hit();
         }
         // call square hit function to declare it as hit
-        this.#attacks.push(coordArr);
+        this.#attacks.push(coordArr.toString());
         square.hit();
     }
 
@@ -130,14 +130,14 @@ export default class GameBoard {
                     if (
                         this.getSquare(cArr[0]).shipPointer === sqr.shipPointer
                     ) {
-                        cArr.push([line, column]);
+                        cArr.push([line, column].toString());
                         isShipRef = true;
                     }
                 });
                 /* if it's not found any occurence then it can only be
                    the first one and must be pushed directly into array */
                 if (!isShipRef) {
-                    shipsCoord.push([[line, column]]);
+                    shipsCoord.push([[line, column].toString()]);
                 }
             }
         }
@@ -151,7 +151,7 @@ export default class GameBoard {
         for (let line = 0; line <= 9; line++) {
             for (let column = 0; column <= 9; column++) {
                 const square = this.#board[line][column];
-                if (square.isHit) hit.push([line, column]);
+                if (square.isHit) hit.push([line, column].toString());
             }
         }
         this.#attacks = hit;
@@ -186,18 +186,30 @@ export default class GameBoard {
         let sunkCount = 0;
         for (const s of ships) {
             const shipLength = s.length;
-            const manyHits = this.getSquare(s[0]).shipPointer.timesHit;
+            const manyHits = this.getSquare(s[0].toString()).shipPointer.timesHit;
             if (manyHits === shipLength) sunkCount++;
         }
         if (sunkCount === howManyShips) return true;
         return false;
     }
 
-    getSquare(coordArr) {
-        if (!Array.isArray(coordArr))
+    getSquare(coord) {
+        /* "y,x" must remove colen */
+        if (typeof coord === "string" && coord.length === 3) {
+            coord = `${coord[0]}${coord[2]}`.split("");
+            coord[0] = Number(coord[0]);
+            coord[1] = Number(coord[1]);
+        }
+        if (!Array.isArray(coord)) {
             throw new Error('invalid coord array to retrieve square');
-        if (coordArr.length !== 2) throw new Error('invalid coord array index');
-        const [y, x] = coordArr;
+        }
+        if (coord.length !== 2) {
+            throw new Error('invalid coord index');
+        }
+        let [y, x] = coord;
+        if (!(Number.isInteger(y)) || !(Number.isInteger(x))) {
+            throw new Error("coords must be valid converted integers");
+        }
 
         return this.#board[y][x];
     }
