@@ -19,6 +19,7 @@ export default class Game {
         this.#bBoardUi = document.querySelector(".board-2");
         this.#d = new DomManager(this.#pBoard, this.#bBoard);
         this.#state = "start";
+        this.rWinner = null;
     }
 
     // should begin and put game in-process
@@ -30,14 +31,17 @@ export default class Game {
         this.#state = "deployment";
          await this.#insetionTime();
 
-         while (!(this.#pBoard.isAllSunk()) && !(this.#bBoard.isAllSunk())) {
-            this.#d.attackAllowedOnce(this.#pBoardUi);
-            await new Promise(resolve => {
-                const interval = setInterval(() => {
-
-                }, interval);
-            });
-            this.#d.attackAllowedOnce(this.#bBoardUi);
+         while (true) {
+            await this.#attackTime(this.#pBoard, this.#pBoardUi);
+            if (this.#pBoard.isAllSunk()) {
+                this.rWinner = "bot";
+                break;
+            }
+            await this.#attackTime(this.#bBoard, this.#bBoardUi);
+            if (this.#bBoard.isAllSunk()) {
+                this.rWinner = "player";
+                break;
+            };
          }
     }
 
@@ -46,21 +50,21 @@ export default class Game {
         this.#d.insertShipUi();
         setTimeout(() => {
             this.#pBoard.placeShip(2, [1, 2], "h");
-            this.#pBoard.placeShip(3, [2, 3], "h");
-            this.#pBoard.placeShip(4, [3, 2], "h");
-            this.#pBoard.placeShip(5, [4, 2], "h");
-            this.#pBoard.placeShip(6, [6, 2], "h");
-            this.#bBoard.placeShip(2, [1, 2], "h");
-            this.#bBoard.placeShip(3, [2, 3], "h");
-            this.#bBoard.placeShip(4, [3, 2], "h");
-            this.#bBoard.placeShip(5, [4, 2], "h");
+            // this.#pBoard.placeShip(3, [2, 3], "h");
+            // this.#pBoard.placeShip(4, [3, 2], "h");
+            // this.#pBoard.placeShip(5, [4, 2], "h");
+            // this.#pBoard.placeShip(6, [6, 2], "h");
+            // this.#bBoard.placeShip(2, [1, 2], "h");
+            // this.#bBoard.placeShip(3, [2, 3], "h");
+            // this.#bBoard.placeShip(4, [3, 2], "h");
+            // this.#bBoard.placeShip(5, [4, 2], "h");
             this.#bBoard.placeShip(6, [6, 2], "h");
 
         }, 3000);
         // verify each 100ms if user has deployed all five ships
         await new Promise(resolve => {
             const interval = setInterval(() => {
-                if (this.#pBoard.getShips().length === 5) {
+                if (this.#pBoard.getShips().length === 1) {
                     clearInterval(interval);
                     resolve();
                 }
@@ -68,6 +72,19 @@ export default class Game {
         });
         this.#d.turnInfoUi();
         this.#d.refreashBoard(this.#pBoardUi);
+        this.#d.refreashBoard(this.#bBoardUi);
     }
-
+    async #attackTime(boardObj, boardUi) {
+        let attackAmount = boardObj.getHits().length;
+        this.#d.attackAllowedOnce(boardUi, boardObj);
+        await new Promise(resolve => {
+            const interval = setInterval(() => {
+               if (boardObj.getHits().length > attackAmount) {
+                console.log(boardObj.getHits().length);
+                clearInterval(interval);
+                resolve();
+               }
+            }, 100);
+        })
+    }
 }

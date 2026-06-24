@@ -35,12 +35,11 @@ export default class DomManager {
     }
 
     //allow user to attack one square
-    attackAllowedOnce(boardDiv) {
+    attackAllowedOnce(boardDiv, boardObj) {
         boardDiv.addEventListener("click", (e) => {
             const line = e.target.dataset.line;
             const column = e.target.dataset.column;
-            this.pBoard.receiveAttack([Number(line), Number(column)]);
-            console.log(line, column);
+            boardObj.receiveAttack([Number(line), Number(column)]);
             this.refreashBoard(boardDiv);
         }, {once: true})
     }
