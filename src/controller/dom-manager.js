@@ -6,6 +6,7 @@ export default class DomManager {
         this.bBoard = botBoard;
     }
 
+    // update board
     refreashBoard(boardDiv) {
         boardDiv.innerHTML = "";
         let boardObj = (boardDiv.dataset.player === "player") ? this.pBoard : this.bBoard;
@@ -33,6 +34,7 @@ export default class DomManager {
         }
     }
 
+    //allow user to attack one square
     attackAllowedOnce(boardDiv) {
         boardDiv.addEventListener("click", (e) => {
             const line = e.target.dataset.line;
@@ -43,7 +45,59 @@ export default class DomManager {
         }, {once: true})
     }
 
-    allowInsertShipUi(){
+    // update ui to allow insertion
+    insertShipUi(){
+        const playerInfoSec = document.querySelector(".player-info");
+        this.#updatePlayerInfo(playerInfoSec, "s");
 
+
+    }
+
+    turnInfoUi() {
+        const playerInfoSec = document.querySelector(".player-info");
+        this.#updatePlayerInfo(playerInfoSec, "t");
+    }
+
+    #updatePlayerInfo(parent, mode, gameInfoObj = {round: 2, turn: "player 1"}) {
+        if (typeof mode !== "string") throw new Error("Invalid mode for updatePlayerInfo");
+        if (mode.charAt(0).toLowerCase() === "s") {
+            const shipBtn = document.createElement("button");
+            shipBtn.classList.add("ship-hand");
+            shipBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m280-400 200-200 200 200H280Z"/></svg> <span class="poppins-font">deploy ships</span>`
+            shipBtn.addEventListener("click", () => {
+                const existDiv = document.querySelector("#ship-hand-div");
+                if (existDiv === null) {
+                    const shipHandDiv = document.createElement("div");
+                    shipHandDiv.setAttribute("id", "ship-hand-div");
+                    parent.appendChild(shipHandDiv);
+                } else {
+                    parent.removeChild(existDiv);
+                }
+            });
+
+            parent.innerHTML = "";
+            parent.appendChild(shipBtn);
+        } else if (mode.charAt(0).toLowerCase() === "t") {
+            const playerTurnSpan = document.createElement("span");
+            const roundSpan = document.createElement("span")
+            const roundNumSpan = document.createElement("span");
+            const infoDiv = document.createElement("div");
+
+
+            playerTurnSpan.classList.add("turn", "poppins-font");
+            playerTurnSpan.textContent = `${gameInfoObj.turn} turn`
+            roundSpan.classList.add("round-number", "poppins-font");
+            roundSpan.textContent = "Round:"
+            roundNumSpan.classList.add("num", "poppins-font");
+            roundNumSpan.textContent = gameInfoObj.round;
+            infoDiv.classList.add("player-turn");
+
+            infoDiv.appendChild(playerTurnSpan);
+            infoDiv.appendChild(roundSpan);
+            infoDiv.appendChild(roundNumSpan);
+
+            parent.innerHTML = "";
+            parent.appendChild(infoDiv);
+        }
     }
 }

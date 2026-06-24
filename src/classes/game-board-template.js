@@ -32,7 +32,7 @@ export default class GameBoard {
         if (!shipLength) throw new Error("can't deploy a ship with no length");
         if (
             !Number.isInteger(shipLength) ||
-            !(shipLength > 0 && shipLength < 6)
+            !(shipLength > 0 && shipLength <= 7)
         )
             throw new Error('Invalid ship length');
         // check if coord are valid
