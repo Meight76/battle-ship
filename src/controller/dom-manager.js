@@ -45,9 +45,9 @@ export default class DomManager {
         this.#updatePlayerInfo(playerInfoSec, 's');
     }
 
-    turnInfoUi() {
+    turnInfoUi(gameInfoObj) {
         const playerInfoSec = document.querySelector('.player-info');
-        this.#updatePlayerInfo(playerInfoSec, 't');
+        this.#updatePlayerInfo(playerInfoSec, 't', gameInfoObj);
     }
 
 

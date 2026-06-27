@@ -69,7 +69,7 @@ export default class Board {
 
         if (mode === 'v') {
             //it throws an error if you try pass a ship that can't fit in the coord provided by you
-            if (y + shipLength > 9)
+            if (y + shipLength > 10)
                 throw new Error(`cant fit y:${y} shipLength:${shipLength}`);
             //iterates through lines to place ship vertically
             for (let v = 0; v < shipLength; v++) {
@@ -83,11 +83,10 @@ export default class Board {
                 //record this current sqr modified in the list declared above in case of error later
                 touchedSqr.push(sqr);
             }
-            return;
         }
         if (mode === 'h') {
             //it throws an error if you try to fit a length in coord that doesn't fit
-            if (x + shipLength > 9)
+            if (x + shipLength > 10)
                 throw new Error(`cant fit x:${x} shipLength:${shipLength}`);
             //iterates through columns
             for (let h = 0; h < shipLength; h++) {
@@ -141,7 +140,7 @@ export default class Board {
     isAllSunk() {
         for (const s of this.#ships) {
             // if i'm storing ships as object, each object should be able to tell itself if it's sunk
-            if (!s.isSunk()) return false;
+            if (!s.isSunk) return false;
         }
         return true;
     }
@@ -165,7 +164,7 @@ export default class Board {
     }
 
     getValidDeploy(length, mode) {
-        if (!(Number.isInteger(length)) || !(this.shipsToDeploy.includes(length)))
+        if (!(Number.isInteger(length)) || !([2, 3, 4, 5].includes(length)))
             throw new Error(`${length} is not valid length`);
         if (mode !== 'v' && mode !== 'h')
             throw new Error(`${mode} is not a valid mode`);
@@ -198,7 +197,7 @@ export default class Board {
         const y = Math.floor(coord / 10);
         const x = coord % 10;
         if (mode === 'v') {
-            if (y + length > 9) return false;
+            if (y + length > 10) return false;
             for (let v = 0; v < length; v++) {
                 let sqr;
                 // in case getSquare return an error it'll automatically means invalid or a mistake made by me kkk
@@ -217,7 +216,7 @@ export default class Board {
         }
         if (mode === 'h') {
             // check if you can fit horizontally a ship in board, or it doesn't fit
-            if (x + length > 9) return false;
+            if (x + length > 10) return false;
             // iterate through columns
             for (let h = 0; h < length; h++) {
                 let sqr;
