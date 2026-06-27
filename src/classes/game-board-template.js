@@ -188,9 +188,20 @@ export default class GameBoard {
             const shipLength = s.length;
             const manyHits = this.getSquare(s[0].toString()).shipPointer.timesHit;
             if (manyHits === shipLength) sunkCount++;
+            console.log({
+                s,
+                ships,
+                manyHits,
+            })
         }
         if (sunkCount === howManyShips) return true;
         return false;
+    }
+
+    resetBoard() {
+        this.#board = this.#initializeBoard();
+        this.#ships = [];
+        this.#attacks = [];
     }
 
     getSquare(coord) {
@@ -210,7 +221,6 @@ export default class GameBoard {
         if (!(Number.isInteger(y)) || !(Number.isInteger(x))) {
             throw new Error("coords must be valid converted integers");
         }
-
         return this.#board[y][x];
     }
 

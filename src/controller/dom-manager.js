@@ -1,9 +1,10 @@
 
 export default class DomManager {
 
-    constructor(playerBoard, botBoard) {
+    constructor(playerBoard, botBoard, game) {
         this.pBoard = playerBoard;
         this.bBoard = botBoard;
+        this.game = game;
     }
 
     // update board
@@ -14,9 +15,6 @@ export default class DomManager {
             for (let column = 0; column < 10; column++) {
                 const uiSqr = document.createElement("div");
                 const objSqr = boardObj.getSquare([line, column]);
-                if (line === 5 && column === 4) {
-                    console.log(objSqr);
-                }
                 uiSqr.classList.add("ui-sqr");
                 uiSqr.dataset.column = column;
                 uiSqr.dataset.line = line;
@@ -39,8 +37,12 @@ export default class DomManager {
         boardDiv.addEventListener("click", (e) => {
             const line = e.target.dataset.line;
             const column = e.target.dataset.column;
-            boardObj.receiveAttack([Number(line), Number(column)]);
+            const coords = [Number(line), Number(column)];
+            const square = boardObj.getSquare(coords);
+            const isHit = square.isHit;
+            if (!isHit) boardObj.receiveAttack(coords);
             this.refreashBoard(boardDiv);
+            if (square.shipPointer !== null || isHit) this.attackAllowedOnce(boardDiv, boardObj);
         }, {once: true})
     }
 
@@ -98,5 +100,56 @@ export default class DomManager {
             parent.innerHTML = "";
             parent.appendChild(infoDiv);
         }
+    }
+
+    callWinnerDialog(winner, player1Pont, player2Pont) {
+        const dialog = document.querySelector("#winner-modal");
+        this.#updateWinnerDialog(winner, player1Pont, player2Pont, dialog);
+
+        if (!dialog.classList.contains("called")) {
+            this.#initializeCloseWinnerDialog(dialog);
+            this.#initializeContinueBtn(this.game.resume.bind(this.game), dialog);
+            this.#initializeRestartBtns(this.game.restart.bind(this.game), dialog);
+            dialog.classList.add("called");
+        }
+
+        dialog.showModal();
+
+    }
+
+    #updateWinnerDialog(winner, player1Pont, player2Pont, dialog) {
+        const winnerNameSpan = dialog.querySelector(".winner-name");
+        const p1PontSpan = dialog.querySelector(".p1-pont");
+        const p2PontSpan = dialog.querySelector(".p2-pont");
+
+        winnerNameSpan.textContent = winner;
+        p1PontSpan.textContent = player1Pont;
+        p2PontSpan.textContent = player2Pont;
+    }
+
+    #initializeCloseWinnerDialog(dialog) {
+        const closeBtn = dialog.querySelector(".close-modal");
+
+        closeBtn.addEventListener("click", () => {
+            dialog.close();
+        })
+    }
+
+    #initializeContinueBtn(callback, dialog) {
+        const continueBtn = dialog.querySelector(".winner-continue");
+        continueBtn.addEventListener("click", () => {
+            callback();
+            dialog.close();
+            this.game.start();
+        });
+    }
+
+    #initializeRestartBtns(callback, dialog) {
+        const restartHeader = document.querySelectorAll(".restart");
+        restartHeader.forEach(el => el.addEventListener("click", () => {
+            callback();
+            dialog.close();
+            this.game.start();
+        }));
     }
 }
