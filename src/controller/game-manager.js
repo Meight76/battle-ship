@@ -8,9 +8,10 @@ export default class Game {
     #d;
     #pBoard;
     #bBoard;
-    #state;
     #pBoardUi;
     #bBoardUi;
+    #turn;
+    #isAttackTime;
     constructor() {
         this.#p = new Player();
         this.#b = new Bot();
@@ -19,114 +20,91 @@ export default class Game {
         this.#pBoardUi = document.querySelector(".board-1");
         this.#bBoardUi = document.querySelector(".board-2");
         this.#d = new DomManager(this.#pBoard, this.#bBoard, this);
-        this.#state = "start";
-        this.rWinner = null;
+        this.#turn = (Math.random() > 0.50) ? "p" : "b";
+        this.#isAttackTime = false;
     }
 
-
-    // reset whole game class
     restart() {
         this.#p = new Player();
         this.#b = new Bot();
-        this.#p.board.resetBoard();
-        this.#b.board.resetBoard();
-        this.#d = new DomManager(this.#pBoard, this.#bBoard, this);
-        this.#state = "start";
-        this.rWinner = null;
-        this.#d.refreashBoard(this.#bBoardUi);
-        this.#d.refreashBoard(this.#pBoardUi);
+        this.#pBoard = this.#p.board;
+        this.#bBoard = this.#b.board;
+        this.#turn = (Math.random > 0.50) ? "p" : "b";
+        this.#isAttackTime = false;
     }
 
     resume() {
-        this.#state = "start";
-        this.rWinner = null;
-        const old = this.#pBoard.getSquare([0, 0]);
         this.#pBoard.resetBoard();
-        const newb = this.#pBoard.getSquare([0, 0]);
         this.#bBoard.resetBoard();
-        console.log(old === newb);
-        this.#d = new DomManager(this.#pBoard, this.#bBoard, this);
-        this.#b.restart()
-        this.#d.refreashBoard(this.#bBoardUi);
         this.#d.refreashBoard(this.#pBoardUi);
+        this.#d.refreashBoard(this.#bBoardUi);
+        this.#isAttackTime = false;
     }
 
-    // should begin and put game in-process
-     async start() {
-        console.log("called");
-        if (this.#pBoard.getShips().length !== 0 || this.#bBoard.getShips().length !== 0) {
+    async start() {
+        if (this.#pBoard.ships.length !== 0 || this.#bBoard.ships.length !== 0) {
             this.resume();
         }
-        // first render the two boards;
+
         this.#d.refreashBoard(this.#pBoardUi);
         this.#d.refreashBoard(this.#bBoardUi);
 
-        this.#state = "deployment";
-         await this.#insetionTime();
+        await this.#insertionTime();
+        this.#d.turnInfoUi().
+        this.#d.refreashBoard(this.#pBoardUi);
+        this.#d.refreashBoard(this.#bBoardUi);
 
-         this.#state = "attacking";
-         let turn = (Math.random() > 0.5) ? "p" : "b";
-         while (true) {
-            if (turn === "p") {
-                await this.#attackTime(this.#bBoard, this.#bBoardUi);
+        this.#isAttackTime = true;
+        while (true) {
+            if (this.#turn === "p") {
+                await this.#playerAttack(this.#bBoard, this.#bBoardUi);
                 if (this.#bBoard.isAllSunk()) {
                     this.#p.pontuaction++;
                     this.#d.callWinnerDialog("player", this.#p.pontuaction, this.#b.pontuaction);
                     break;
-                };
-                turn = "b";
+                }
+                this.#turn = "b";
             } else {
-                await this.#b.randomAttack(this.#pBoard);
+                this.#b.randomAttack(this.#pBoard);
                 this.#d.refreashBoard(this.#pBoardUi);
                 if (this.#pBoard.isAllSunk()) {
                     this.#b.pontuaction++;
                     this.#d.callWinnerDialog("bot", this.#p.pontuaction, this.#b.pontuaction);
                     break;
                 }
-                turn = "p";
+                this.#turn = "p";
             }
-         }
-         this.#state = "game over";
+        }
     }
 
-     async #insetionTime() {
-        // update interface
+    async #insertionTime() {
         this.#d.insertShipUi();
-        setTimeout(() => {
-            this.#pBoard.placeShip(6, [1, 1], "h");
-            this.#pBoard.placeShip(6, [2, 1], "h");
-            this.#pBoard.placeShip(6, [3, 1], "h");
-            this.#pBoard.placeShip(6, [4, 1], "h");
-            this.#pBoard.placeShip(6, [5, 1], "h");
-            this.#pBoard.placeShip(6, [6, 1], "h");
-            this.#pBoard.placeShip(6, [7, 1], "h");
-
-            this.#b.randomDeploy();
-        }, 3000);
-        // verify each 100ms if user has deployed all five ships
         await new Promise(resolve => {
+            this.#p.deployShips();
+            this.#b.randomDeploy();
             const interval = setInterval(() => {
-                if (this.#pBoard.getShips().length === 7) {
+                if (this.#p.board.ships.length === 5 && this.#b.board.ships.length === 5) {
                     clearInterval(interval);
                     resolve();
                 }
             }, 100);
         });
-        this.#d.turnInfoUi();
-        this.#d.refreashBoard(this.#pBoardUi);
-        this.#d.refreashBoard(this.#bBoardUi);
     }
-    async #attackTime(boardObj, boardUi) {
-        let attackAmount = boardObj.getHits().length;
-        let missedAttack = boardObj.getMissedAttacks();
-        this.#d.attackAllowedOnce(boardUi, boardObj);
-        await new Promise(resolve => {
+
+    async #playerAttack() {
+        return new Promise(resolve => {
+            const missCount = this.#bBoard.missedHits.length;
             const interval = setInterval(() => {
-               if ((boardObj.getHits().length > attackAmount && boardObj.getMissedAttacks().length !== missedAttack.length) || boardObj.isAllSunk() || missedAttack.length < boardObj.getMissedAttacks().length) {
-                clearInterval(interval);
-                resolve();
-               }
+                if (this.#bBoard.missedHits.length > missCount) {
+                    clearInterval(interval);
+                    resolve();
+                }
             }, 100);
-        })
+        });
+    }
+
+    attackSqr(coords) {
+        if (this.#turn !== "p" || this.#isAttackTime) return;
+        this.#p.attack(this.#bBoard, coords);
     }
 }

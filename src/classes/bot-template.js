@@ -3,15 +3,6 @@ import Player from "./player-template.js";
 export default class Bot extends Player {
     constructor() {
         super();
-        this.validAttack = this.#getArrayFilled(100);
-    }
-
-    #getArrayFilled(length) {
-        const arr = [];
-        for (let i = 0; i < length; i++) {
-            arr.push(i);
-        }
-        return arr;
     }
 
     randomDeploy() {
@@ -27,11 +18,11 @@ export default class Bot extends Player {
         }
     }
 
-    randomAttack() {
+    randomAttack(boardObj) {
         const validAtt = this.board.getValidAttacks();
         if (!validAtt) throw new Error("no square left to attack");
         const randomInd = Math.floor(Math.random() * validAtt.length);
         const coord = validAtt[randomInd];
-        this.attack(coord);
+        this.attack(boardObj, coord);
     }
 }

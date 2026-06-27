@@ -6,7 +6,7 @@ export default class Player {
         this.pontuaction = 0;
     }
 
-    attack(coord) {
-        this.board.receiveAttack(coord);
+    attack(boardObj, coord) {
+        boardObj.receiveAttack(coord);
     }
 }
