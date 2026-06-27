@@ -4,18 +4,22 @@ export default class DomManager {
         this.bBoard = botBoard;
         this.game = game;
     }
-
+    // update board
     refreashBoard(boardDiv) {
+        // clear all it's inside content, because this function expect an empty div
         boardDiv.innerHTML = '';
+        // if it doesn't have listen class it means it's the first call from function
         if (!boardDiv.classList.contains('listen'))
             this.#BoardListens(boardDiv);
         let boardObj =
             boardDiv.dataset.player === 'player' ? this.pBoard : this.bBoard;
+        // based on boardObj it creates a boardUi
         for (let line = 0; line < 10; line++) {
             for (let column = 0; column < 10; column++) {
                 const uiSqr = document.createElement('div');
                 const objSqr = boardObj.getSquare(line * 10 + column);
                 uiSqr.classList.add('ui-sqr');
+                // make use from dataset to store info to help making methods later
                 uiSqr.dataset.column = column;
                 uiSqr.dataset.line = line;
                 uiSqr.dataset.isShip = objSqr.ship !== null ? true : false;
@@ -46,24 +50,30 @@ export default class DomManager {
         this.#updatePlayerInfo(playerInfoSec, 't');
     }
 
+
+    // alter playerInfo(div) content, recreating everytime
+    // mode === 's' means ship, mode === 't', means turn
+    // parent is expected to be .player-info
     #updatePlayerInfo(parent, mode, gameInfoObj = { round: 1, turn: 'none' }) {
-        if (mode !== 's' || mode !== 't')
+        if (mode !== 's' && mode !== 't')
             throw new Error(`${mode} is not a valid mode`);
         if (mode === 's') {
             const shipBtn = document.createElement('button');
             shipBtn.classList.add('ship-hand');
             shipBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m280-400 200-200 200 200H280Z"/></svg> <span class="poppins-font">deploy ships</span>`;
+            // if div exist remove it from page, if it doesn't exist add to page
+            // swap between in page and not
             shipBtn.addEventListener('click', () => {
                 const existDiv = document.querySelector('#ship-hand-div');
                 if (!existDiv) {
-                    const shipHandDiv = document.createELement('div');
+                    const shipHandDiv = document.createElement('div');
                     shipHandDiv.setAttribute('id', 'ship-hand-div');
                     parent.append(shipHandDiv);
                 } else {
                     parent.removeChild(existDiv);
                 }
             });
-
+            // remember function expect to add a whole new div, it cannot contain already one
             parent.innerHTML = '';
             parent.appendChild(shipBtn);
             return;
@@ -92,10 +102,12 @@ export default class DomManager {
         }
     }
 
+    // update modal with its passed arguments and call it
     callWinnerDialog(winner, player1Pont, player2Pont) {
         const dialog = document.querySelector('#winner-modal');
         this.#updateWinnerDialog(winner, player1Pont, player2Pont, dialog);
 
+        // if it's the first time calling modal, add its eventListeners
         if (!dialog.classList.contains('called')) {
             this.#initializeCloseWinnerDialog(dialog);
             this.#initializeContinueBtn(
@@ -148,7 +160,8 @@ export default class DomManager {
             })
         );
     }
-
+    // player board should be able to call attack function everytime since start
+    // Game class should decide when it's a valid attack, if not just ignore it
     #BoardListens(boardDiv) {
         boardDiv.classList.add('listen');
         boardDiv.addEventListener('click', (e) => {
