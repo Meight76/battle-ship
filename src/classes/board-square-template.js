@@ -1,25 +1,20 @@
-import Ship from './ship-template.js';
+import Ship from "./ship-template.js";
 
 export default class Square {
-    #ship = '';
-    #isHit = '';
+    #ship;
+    #isHit;
     constructor() {
-        this.#ship = null;
         this.#isHit = false;
+        this.#ship = null;
     }
 
-    set shipPointer(shipObj) {
-        if (!(shipObj instanceof Ship))
-            throw new Error("can't point to a non-ship object");
+    set ship(shipObj) {
+        if (!(shipObj instanceof Ship)) throw new Error("cant point to a non-ship object");
         this.#ship = shipObj;
     }
 
-    get shipPointer() {
+    get ship() {
         return this.#ship;
-    }
-
-    resetShip() {
-        this.#ship = null;
     }
 
     get isHit() {
@@ -28,6 +23,11 @@ export default class Square {
 
     hit() {
         this.#isHit = true;
+        if (this.#ship !== null) this.#ship.hit();
+    }
+
+    resetShip() {
+        this.#ship = null;
     }
 
     resetHit() {
