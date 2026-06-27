@@ -118,6 +118,17 @@ export default class Board {
         return validInd;
     }
 
+    getValidAttacks() {
+        const valid = [];
+        for (let y = 0; y < 10; y++) {
+            for (let x = 0; x < 10; x++) {
+                const sqr = this.getSquare(y * 10 + x);
+                if (!(sqr === undefined) || !(sqr.isHit)) valid.push(y * 10 + x);
+            }
+            return valid;
+        }
+    }
+
     #checkCoordAHead(coord, mode, length) {
         const y = Math.floor(coord / 10);
         const x = coord % 10;
