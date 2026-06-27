@@ -23,7 +23,11 @@ export default class Square {
 
     hit() {
         this.#isHit = true;
-        if (this.#ship !== null) this.#ship.hit();
+        if (this.#ship !== null) {
+            this.#ship.hit();
+            return true;
+        }
+        return false;
     }
 
     resetShip() {
