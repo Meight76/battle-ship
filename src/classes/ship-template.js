@@ -3,6 +3,7 @@ export default class Ship {
     #numHits = '';
 
     constructor(length) {
+        if (length < 2 || length > 5) throw new Error(`${length} is not valid length`);
         this.#len = length;
         this.#numHits = 0;
     }

@@ -1,8 +1,8 @@
-import GameBoard from './game-board-template.js';
+import Board from './game-board-template.js';
 
 export default class Player {
     constructor() {
-        this.board = new GameBoard();
+        this.board = new Board();
         this.pontuaction = 0;
     }
 
