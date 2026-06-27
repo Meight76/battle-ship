@@ -1,4 +1,4 @@
-import Ship from "./ship-template.js";
+import Ship from './ship-template.js';
 
 export default class Square {
     #ship;
@@ -9,7 +9,8 @@ export default class Square {
     }
 
     set ship(shipObj) {
-        if (!(shipObj instanceof Ship)) throw new Error("cant point to a non-ship object");
+        if (!(shipObj instanceof Ship))
+            throw new Error('cant point to a non-ship object');
         this.#ship = shipObj;
     }
 

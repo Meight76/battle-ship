@@ -16,7 +16,7 @@
     "main": "index.js",
     "scripts": {
         "test": "jest",
-        "prettier": "prettier",
+        "prettier": "prettier --write",
         "eslint": "eslint",
         "dev": "webpack serve --config webpack.dev.js",
         "build": "webpack --config webpack.prod.js",
