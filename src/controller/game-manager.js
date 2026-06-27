@@ -145,7 +145,7 @@ export default class Game {
             const missCount = this.#bBoard.missedHits.length;
             const interval = setInterval(() => {
                 // if they miss an attack, they're turn should be finished
-                if (this.#bBoard.missedHits.length > missCount) {
+                if (this.#bBoard.missedHits.length > missCount || this.#bBoard.isAllSunk()) {
                     clearInterval(interval);
                     resolve();
                 }

@@ -40,5 +40,6 @@ export default class Bot extends Player {
         const randomInd = Math.floor(Math.random() * validAtt.length);
         const coord = validAtt[randomInd];
         this.attack(boardObj, coord);
+        if (boardObj.getSquare(coord).ship !== null) return this.randomAttack(boardObj);
     }
 }

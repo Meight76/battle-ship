@@ -163,12 +163,16 @@ export default class DomManager {
     // player board should be able to call attack function everytime since start
     // Game class should decide when it's a valid attack, if not just ignore it
     #BoardListens(boardDiv) {
+        if (boardDiv.dataset.player === "player") return;
         boardDiv.classList.add('listen');
         boardDiv.addEventListener('click', (e) => {
+            if (!(e.target.classList.contains("ui-sqr"))) return
             const line = e.target.dataset.line;
             const column = e.target.dataset.column;
             const coords = Number(line) * 10 + Number(column);
+            console.log({column, line, coords})
             this.game.attackSqr(coords);
+            this.refreashBoard(boardDiv);
         });
     }
 }
