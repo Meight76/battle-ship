@@ -104,7 +104,7 @@ export default class Game {
     }
 
     attackSqr(coords) {
-        if (this.#turn !== "p" || this.#isAttackTime) return;
+        if (this.#turn !== "p" || this.#isAttackTime || this.#bBoard.getSquare(coords).isHit) return;
         this.#p.attack(this.#bBoard, coords);
     }
 }
