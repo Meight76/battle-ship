@@ -5,4 +5,8 @@ export default class Player {
         this.board = new GameBoard();
         this.pontuaction = 0;
     }
+
+    attack(coord) {
+        this.board.receiveAttack(coord);
+    }
 }
