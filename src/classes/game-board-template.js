@@ -27,7 +27,7 @@ export default class Board {
     placeShip(shipLength, coord, mode) {
         if (!(this.shipsToDeploy.includes(shipLength))) throw new Error(`${shipLength} is not a valid ship length`);
         if (!(Number.isInteger(coord)) || coord < 0 || coord > 99) throw new Error(`${coord} is not a valid coord`);
-        if (!(mode !== "v" && mode !== "h")) throw new Error(`${mode} is not a valid mode`);
+        if (mode !== "v" && mode !== "h") throw new Error(`${mode} is not a valid mode`);
         const y = Math.floor(coord / 10);
         const x = coord % 10;
         const ship = new Ship(shipLength);
@@ -104,6 +104,55 @@ export default class Board {
         const y = Math.floor(coord / 10);
         const x = coord % 10;
         return this.#board[y][x];
+    }
+
+    getValidDeploy(length, mode) {
+        if (!(Number.isInteger(length)) || length < 2 || length > 5) throw new Error(`${length} is not valid length`);
+        if (mode !== "v" && mode !== "h") throw new Error(`${mode} is not a valid mode`);
+        const validInd = [];
+        for (let y = 0; y < 10; y++) {
+            for (let x = 0; x < 10; x++) {
+                if (this.#checkCoordAHead(y * 10 + x, mode, length)) validInd.push(y * 10 + x);
+            }
+        }
+        return validInd;
+    }
+
+    #checkCoordAHead(coord, mode, length) {
+        const y = Math.floor(coord / 10);
+        const x = coord % 10;
+        if (mode === "v") {
+            if (y + length > 9) return false;
+            for (let v = 0; v < length; v++) {
+                let sqr;
+                try {
+                    sqr = this.getSquare((y + v) * 10 + x);
+                } catch (e) {
+                    console.log(e.name);
+                    console.log(e.message);
+                    return false;
+                }
+                if(sqr === undefined) return false;
+                if (sqr.ship !== null) return false;
+            }
+            return true;
+        }
+        if (mode === "h") {
+            if (x + length > 9) return false;
+            for (let h = 0; h < length; h++) {
+                let sqr;
+                try {
+                    sqr = this.getSquare(y * 10 + x + h);
+                } catch(e) {
+                    console.log(e.name);
+                    console.log(e.message);
+                    return false;
+                }
+                if (sqr === undefined) return false;
+                if (sqr.ship !== null) return false;
+            }
+            return true;
+        }
     }
 
     visualizeConsoleBoard() {
