@@ -124,6 +124,13 @@ export default class DomManager {
         dialog.showModal();
     }
 
+    updateStats(p1Points, p2Points) {
+        const p1Stats = document.querySelector(".player1-pont");
+        const p2Stats = document.querySelector(".player2-pont");
+        p1Stats.textContent = p1Points;
+        p2Stats.textContent = p2Points;
+    }
+
     #updateWinnerDialog(winner, player1Pont, player2Pont, dialog) {
         const winnerNameSpan = dialog.querySelector('.winner-name');
         const p1PontSpan = dialog.querySelector('.p1-pont');

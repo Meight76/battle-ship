@@ -42,6 +42,7 @@ export default class Game {
         this.#isAttackTime = false;
         this.#d.refreashBoard(this.#pBoardUi);
         this.#d.refreashBoard(this.#bBoardUi);
+        this.#d.updateStats(this.#p.pontuaction, this.#b.pontuaction);
         this.#pTimesPlayed = 0;
         this.#bTimesPlayed = 0;
     }
@@ -93,6 +94,7 @@ export default class Game {
                         this.#p.pontuaction,
                         this.#b.pontuaction
                     );
+                    this.#d.updateStats(this.#p.pontuaction, this.#b.pontuaction);
                     this.#isAttackTime = false;
                     break;
                 }
@@ -114,6 +116,7 @@ export default class Game {
                         this.#p.pontuaction,
                         this.#b.pontuaction
                     );
+                    this.#d.updateStats(this.#p.pontuaction, this.#b.pontuaction);
                     this.#isAttackTime = false;
                     break;
                 }
