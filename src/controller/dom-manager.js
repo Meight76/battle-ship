@@ -5,7 +5,8 @@ export default class DomManager {
         this.game = game;
     }
     // update board
-    refreashBoard(boardDiv) {
+    // isEndGame means game is over, this will allow user to see all bot's ships
+    refreashBoard(boardDiv, isEndGame) {
         // clear all it's inside content, because this function expect an empty div
         boardDiv.innerHTML = '';
         // if it doesn't have listen class it means it's the first call from function
@@ -35,6 +36,7 @@ export default class DomManager {
                     uiSqr.classList.add('hit');
                 if (uiSqr.dataset.isShip === 'true')
                     uiSqr.classList.add('ship');
+                if (boardObj === this.bBoard && !isEndGame) uiSqr.classList.add('bot');
                 boardDiv.appendChild(uiSqr);
             }
         }

@@ -677,11 +677,11 @@ body {
     font-size: calc(100% + 0.2rem);
 }
 
-.ship {
+:not(.bot, .hit).ship {
     background-color: var(--pink-100);
 }
 
-.ship:hover {
+:not(.bot, .hit).ship:hover {
     background-color: oklch(from var(--pink-100) calc(l - 0.1) c h);
 }
 

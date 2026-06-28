@@ -89,6 +89,9 @@ export default class Game {
                 // if it's bot's ships are all sunk then player won
                 if (this.#bBoard.isAllSunk()) {
                     this.#p.pontuaction++;
+                    this.#d.refreashBoard(this.#pBoardUi);
+                    // this true here means isEndGame, it doesn't make any difference in player's board
+                    this.#d.refreashBoard(this.#bBoardUi, true);
                     this.#d.callWinnerDialog(
                         'player',
                         this.#p.pontuaction,
@@ -111,6 +114,9 @@ export default class Game {
                 // if player's ships are all sunk then bot won
                 if (this.#pBoard.isAllSunk()) {
                     this.#b.pontuaction++;
+                    this.#d.refreashBoard(this.#pBoardUi);
+                    // this true here means isEndGame, allow user to see bot's ships
+                    this.#d.refreashBoard(this.#bBoardUi, true);
                     this.#d.callWinnerDialog(
                         'bot',
                         this.#p.pontuaction,
