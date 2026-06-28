@@ -69,6 +69,7 @@ export default class DomManager {
                     const shipHandDiv = document.createElement('div');
                     shipHandDiv.setAttribute('id', 'ship-hand-div');
                     parent.append(shipHandDiv);
+                    this.renderShipHand(this.pBoard);
                 } else {
                     parent.removeChild(existDiv);
                 }
@@ -160,6 +161,78 @@ export default class DomManager {
             })
         );
     }
+
+    renderShipHand(boardObj) {
+        // get container to append ships
+        const div = document.querySelector("#ship-hand-div");
+        div.innerHTML = "";
+        // each time this div will be updated it'll know the ships to make
+        for (const length of boardObj.shipsToDeploy) {
+            const ship = document.createElement("div");
+            ship.classList.add("ship-ui");
+
+            const sSqrG = document.createElement("div");
+            sSqrG.dataset.length = length;
+            sSqrG.classList.add("ship-ui-sqr-g");
+            sSqrG.setAttribute("draggable", true);
+            sSqrG.dataset.mode = "h";
+            sSqrG.addEventListener("dragstart", () => {
+            sSqrG.classList.add("drag");
+            });
+
+            const changePosBtn = document.createElement("button");
+            changePosBtn.classList.add("change-pos-btn");
+            changePosBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M204-318q-22-38-33-78t-11-82q0-134 93-228t227-94h7l-64-64 56-56 160 160-160 160-56-56 64-64h-7q-100 0-170 70.5T240-478q0 26 6 51t18 49l-60 60ZM481-40 321-200l160-160 56 56-64 64h7q100 0 170-70.5T720-482q0-26-6-51t-18-49l60-60q22 38 33 78t11 82q0 134-93 228t-227 94h-7l64 64-56 56Z"/></svg>`
+            changePosBtn.addEventListener("click", () => {
+                sSqrG.dataset.mode = (sSqrG.dataset.mode === "v") ? "h" : "v";
+                if (sSqrG.dataset.mode === "h") {
+                    sSqrG.style.flexDirection = "row";
+                } else {
+                    sSqrG.style.flexDirection = "column";
+                }
+            });
+            sSqrG.appendChild(changePosBtn);
+            sSqrG.addEventListener("dragend", () => {
+                sSqrG.classList.remove("drag");
+            });
+            // generate the squares inside div
+            for (let i = 0; i < length; i++) {
+                const sSqr = document.createElement("div");
+                sSqr.classList.add("ship-ui-sqr");
+                sSqrG.appendChild(sSqr);
+                ship.appendChild(sSqrG);
+            }
+            div.appendChild(ship);
+        }
+    }
+
+    boardDragUi(boardUi) {
+        let middleSqrUi;
+        let dragEl;
+        let length;
+        let mode;
+        boardUi.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dragEl = document.querySelector(".drag");
+            mode = dragEl.dataset.mode;
+            length = dragEl.dataset.length;
+            middleSqrUi = e.target.closest(".ui-sqr");
+            console.log(middleSqrUi, dragEl, length);
+        });
+        boardUi.addEventListener("drop", () => {
+            const offSet = Math.floor(length / 2);
+            const y = Number(middleSqrUi.dataset.line);
+            const x = Number(middleSqrUi.dataset.column);
+            if (mode === "h") {
+                this.pBoard.placeShip(Number(length), y * 10 + (x - offSet), "h");
+            } else {
+                this.pBoard.placeShip(Number(length), (y - offSet) * 10 + x, "v");
+            }
+            this.refreashBoard(boardUi);
+            this.renderShipHand(this.pBoard);
+        })
+    }
+
     // player board should be able to call attack function everytime since start
     // Game class should decide when it's a valid attack, if not just ignore it
     #BoardListens(boardDiv) {

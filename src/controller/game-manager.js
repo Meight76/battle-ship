@@ -154,11 +154,7 @@ export default class Game {
     }
 
     #playerDeploy() {
-        this.#pBoard.placeShip(2, 10, "h");
-        this.#pBoard.placeShip(3, 15, "h");
-        this.#pBoard.placeShip(3, 40, "v");
-        this.#pBoard.placeShip(4, 42, "v");
-        this.#pBoard.placeShip(5, 63, "h");
+        this.#d.boardDragUi(this.#pBoardUi);
     }
 
     // this is the function that validates if player attack is valid as well as the one that accept it

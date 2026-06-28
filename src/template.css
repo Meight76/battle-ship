@@ -190,7 +190,7 @@ body {
 .boards-section::after {
     content: '';
     position: absolute;
-    bottom: -20px;
+    bottom: -40px;
     left: 49.4%;
     width: 2px;
     background-color: red;
@@ -316,6 +316,61 @@ body {
         sans-serif;
 }
 
+#ship-hand-div {
+    box-sizing: border-box;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4vw;
+}
+
+.ship-ui {
+    position: relative;
+    height: 7vh;
+    width: 10vw;
+    border-radius: 10px;
+    box-shadow: 0 0 8px inset oklch(from var(--tinted-black) l c h );
+    display: flex;
+    justify-content: center;
+    gap: 0.5vw;
+    align-items: center;
+}
+
+.ship-ui-sqr {
+    border-radius: 4px;
+    height: 2vh;
+    width: 2vw;
+    border: 1px solid black;
+    box-shadow: 0 0 10px inset oklch(from var(--tinted-black) l c h / 0.7);
+    background-color: yellow;
+}
+
+.ship-ui-sqr-g {
+    cursor: move;
+    display: flex;
+}
+
+.change-pos-btn {
+    position: absolute;
+    width: 2vw;
+    background-color: crimson;
+    border: 1px solid black;
+    height: 3vh;
+    border-radius: 20px;
+    color: blue;
+    top: -10px;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+        width: 1.5vw;
+    }
+}
+
 @media (width < 900px) {
     .stats-bar {
         .control-btns {
@@ -337,10 +392,40 @@ body {
             width: 43vw;
         }
     }
+    #ship-hand-div {
+    box-sizing: border-box;
+    cursor: move;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8vw;
+}
+
+.ship-ui {
+    box-shadow: 0 0 7px inset oklch(from var(--tinted-black) l c h);
+    display: flex;
+    gap: 1vw;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    height: 5vh;
+    width: 32vw;
+
+}
+
+.ship-ui-sqr {
+    background-color: cyan;
+    border-radius: 3px;
+    height: 3vh;
+    width: 5vw;
+}
+
 }
 
 .ui-sqr {
     border: 1px solid black;
+    box-shadow: 0 0 5px oklch(from var(--tinted-black) l c h / 0.5);
     border-radius: 3px;
 }
 
