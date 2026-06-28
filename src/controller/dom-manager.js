@@ -1,8 +1,12 @@
 export default class DomManager {
+    #lastPreview;
+    #lastDragoverSquare;
     constructor(playerBoard, botBoard, game) {
         this.pBoard = playerBoard;
         this.bBoard = botBoard;
         this.game = game;
+        this.#lastDragoverSquare = null;
+        this.#lastPreview = [];
     }
     // update board
     // isEndGame means game is over, this will allow user to see all bot's ships
@@ -39,6 +43,39 @@ export default class DomManager {
                 if (boardObj === this.bBoard && !isEndGame) uiSqr.classList.add('bot');
                 boardDiv.appendChild(uiSqr);
             }
+        }
+    }
+
+    #getSqrPreview() {
+        const isDragEl = document.querySelector(".drag");
+        if (isDragEl === null) return;
+        const previewObj = {
+            isValid: true,
+            coords: []
+        };
+        const length = isDragEl.dataset.length;
+        const mode = isDragEl.dataset.mode;
+        const sqrHoldOver = this.#lastDragoverSquare;
+        const offset = Math.floor(length / 2);
+        const line = Number(sqrHoldOver.dataset.line);
+        const column = Number(sqrHoldOver.dataset.column);
+        if (mode === "v") {
+            const x = column;
+            for (let v = 0; v < length; v++) {
+                const y = v - offset + line;
+                if (y < 0 || y > 9) previewObj.isValid = false;
+                previewObj.coords.push(y * 10 + x);
+                }
+                return previewObj;
+            }
+        if (mode === "h") {
+            const y = line;
+            for (let h = 0; h < length; h++) {
+                const x = h - offset + column;
+                if (x < 0 || x > 9) previewObj.isValid = false;
+                previewObj.coords.push(y * 10 + x);
+            }
+            return previewObj;
         }
     }
 
@@ -222,6 +259,33 @@ export default class DomManager {
         }
     }
 
+    #updatePreview(boardUi) {
+        // remove class from old preview
+        while (this.#lastPreview.length !== 0) {
+            const sqrUi = this.#lastPreview.pop();
+            sqrUi.classList.remove("preview-valid");
+            sqrUi.classList.remove("preview-invalid");
+        }
+
+        if (this.#lastDragoverSquare === null) return;
+        // get new preview squares
+        const sqrPreviewObj = this.#getSqrPreview();
+        const sqrCoords = sqrPreviewObj.coords;
+        // c should be a number between 0...99
+        for (const c of sqrCoords) {
+            if (!Number.isInteger(c) || c < 0 || c > 100) continue;
+            const line = Math.floor(c / 10);
+            const column = c % 10;
+            const sqrUi = boardUi.querySelector(`[data-line="${line}"][data-column="${column}"]`)
+            if (sqrPreviewObj.isValid) {
+                sqrUi.classList.add("preview-valid");
+            } else {
+                sqrUi.classList.add("preview-invalid");
+            }
+            this.#lastPreview.push(sqrUi);
+        }
+    }
+
     boardDragUi(boardUi) {
         let middleSqrUi;
         let dragEl;
@@ -233,9 +297,13 @@ export default class DomManager {
             mode = dragEl.dataset.mode;
             length = dragEl.dataset.length;
             middleSqrUi = e.target.closest('.ui-sqr');
-            console.log(middleSqrUi, dragEl, length);
+            if (middleSqrUi === this.#lastDragoverSquare) return;
+            this.#lastDragoverSquare = middleSqrUi;
+            this.#updatePreview(boardUi);
         });
         boardUi.addEventListener('drop', () => {
+            console.log("dropped");
+            this.#lastDragoverSquare = null;
             const offSet = Math.floor(length / 2);
             const y = Number(middleSqrUi.dataset.line);
             const x = Number(middleSqrUi.dataset.column);
@@ -253,23 +321,25 @@ export default class DomManager {
                 );
             }
             this.refreashBoard(boardUi);
+            this.#updatePreview(boardUi);
             this.renderShipHand(this.pBoard);
         });
     }
-
-    // player board should be able to call attack function everytime since start
-    // Game class should decide when it's a valid attack, if not just ignore it
-    #BoardListens(boardDiv) {
-        if (boardDiv.dataset.player === 'player') return;
-        boardDiv.classList.add('listen');
-        boardDiv.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('ui-sqr')) return;
-            const line = e.target.dataset.line;
-            const column = e.target.dataset.column;
-            const coords = Number(line) * 10 + Number(column);
-            console.log({ column, line, coords });
-            this.game.attackSqr(coords);
-            this.refreashBoard(boardDiv);
-        });
-    }
+        // player board should be able to call attack function everytime since start
+        // Game class should decide when it's a valid attack, if not just ignore it
+        #BoardListens(boardDiv) {
+            if (boardDiv.dataset.player === 'player') return;
+            boardDiv.classList.add('listen');
+            boardDiv.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('ui-sqr')) return;
+                const line = e.target.dataset.line;
+                const column = e.target.dataset.column;
+                const coords = Number(line) * 10 + Number(column);
+                console.log({ column, line, coords });
+                this.game.attackSqr(coords);
+                this.refreashBoard(boardDiv);
+            });
+        }
 }
+
+

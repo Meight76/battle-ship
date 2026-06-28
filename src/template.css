@@ -685,6 +685,8 @@ body {
     background-color: oklch(from var(--pink-100) calc(l - 0.1) c h);
 }
 
+
+
 .hit {
     border: oklch(from var(--mechanic-orage) calc(l - 0.2) c h) 2px solid;
     background-color: var(--mechanic-orage);
@@ -692,4 +694,10 @@ body {
 
 .hit:hover {
     background-color: oklch(from var(--mechanic-orage) calc(l - 0.1) c h);
+}
+.preview-valid {
+    background-color: oklch(from lime l c h / 0.5);
+}
+.preview-invalid {
+    background-color: oklch(from red l c h / 0.5);
 }
