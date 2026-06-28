@@ -3,7 +3,7 @@ import Ship from '../src/classes/ship-template.js';
 let ship = new Ship();
 
 describe('hit functions apply state correctly', () => {
-    beforeEach(() => ship = new Ship(3));
+    beforeEach(() => (ship = new Ship(3)));
 
     test('timesHit', () => {
         expect(ship.timesHit).toBe(0);
@@ -11,11 +11,11 @@ describe('hit functions apply state correctly', () => {
         expect(ship.timesHit).toBe(1);
         ship.hit();
         expect(ship.timesHit).toBe(2);
-    })
+    });
 
     test('length', () => {
         expect(ship.length).toBe(3);
-    })
+    });
 
     test('isSunk', () => {
         expect(ship.isSunk).not.toBeTruthy();
@@ -24,5 +24,5 @@ describe('hit functions apply state correctly', () => {
         ship.hit();
         expect(ship.isSunk).toBeTruthy();
         expect(ship.timesHit).toBe(3);
-    })
+    });
 });

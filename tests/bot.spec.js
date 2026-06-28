@@ -1,5 +1,5 @@
-import Bot from "../src/classes/bot-template.js";
-import Board from "../src/classes/game-board-template.js";
+import Bot from '../src/classes/bot-template.js';
+import Board from '../src/classes/game-board-template.js';
 
 let bot = new Bot();
 let board = new Board();
@@ -18,7 +18,7 @@ describe('random attack', () => {
         bot.randomAttack(board);
         expect(board.missedHits.length).toBe(5);
     });
-})
+});
 
 describe('random deploy', () => {
     beforeEach(() => {

@@ -51,10 +51,10 @@ export default class Board {
     */
     placeShip(shipLength, coord, mode) {
         // check if you provided a valid length other wise it throws an error to warn you
-        if (!(this.shipsToDeploy.includes(shipLength)))
+        if (!this.shipsToDeploy.includes(shipLength))
             throw new Error(`${shipLength} is not a valid ship length`);
         //check if you provided a valid coord other wise it throws an error to warn you
-        if (!(Number.isInteger(coord)) || coord < 0 || coord > 99)
+        if (!Number.isInteger(coord) || coord < 0 || coord > 99)
             throw new Error(`${coord} is not a valid coord`);
         //check if you provided a valid mode otherwise it throws an error to warn you
         if (mode !== 'v' && mode !== 'h')
@@ -111,7 +111,7 @@ export default class Board {
     // it takes a coord and attack it's corresponding square in memory
     receiveAttack(coord) {
         // if you didn't provided integer, or coord are not in between 0..99 throw error to warn you
-        if (!(Number.isInteger(coord)) || coord < 0 || coord > 99)
+        if (!Number.isInteger(coord) || coord < 0 || coord > 99)
             throw new Error(`${coord} is not valid coord`);
         const y = Math.floor(coord / 10);
         const x = coord % 10;
@@ -164,7 +164,7 @@ export default class Board {
     }
 
     getValidDeploy(length, mode) {
-        if (!(Number.isInteger(length)) || !([2, 3, 4, 5].includes(length)))
+        if (!Number.isInteger(length) || ![2, 3, 4, 5].includes(length))
             throw new Error(`${length} is not valid length`);
         if (mode !== 'v' && mode !== 'h')
             throw new Error(`${mode} is not a valid mode`);

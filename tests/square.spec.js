@@ -1,16 +1,16 @@
-import Square from "../src/classes/board-square-template.js";
-import Ship from "../src/classes/ship-template.js";
+import Square from '../src/classes/board-square-template.js';
+import Ship from '../src/classes/ship-template.js';
 
 let sqr = new Square();
 
 describe('hit update states correctly', () => {
-    beforeEach(() => sqr = new Square());
+    beforeEach(() => (sqr = new Square()));
 
     test('hit no ship', () => {
         sqr.hit();
         expect(sqr.hit).toBeTruthy();
         expect(sqr.ship).toBeNull();
-    })
+    });
     test('hit contain ship', () => {
         sqr.ship = new Ship(3);
         sqr.hit();

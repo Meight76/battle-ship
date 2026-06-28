@@ -14,6 +14,7 @@ export default class Game {
     #isAttackTime;
     #pTimesPlayed;
     #bTimesPlayed;
+    #firstGameLoaded;
     constructor() {
         this.#p = new Player();
         this.#b = new Bot();
@@ -26,6 +27,7 @@ export default class Game {
         this.#isAttackTime = false;
         this.#pTimesPlayed = 0;
         this.#bTimesPlayed = 0;
+        this.#firstGameLoaded = true;
     }
 
     // restart essential priorities to initial value
@@ -71,15 +73,16 @@ export default class Game {
         // update playerInfo(div) content to represent rounds
         this.#d.refreashBoard(this.#pBoardUi);
         this.#d.refreashBoard(this.#bBoardUi);
+        this.#firstGameLoaded = false;
 
         // this property is a rule that allow player to attack board from Dom method
         this.#isAttackTime = true;
         while (true) {
-            const turn = this.#turn === "p" ? "player" : "bot";
+            const turn = this.#turn === 'p' ? 'player' : 'bot';
             const round = this.roundCount;
-            this.#d.turnInfoUi({turn, round});
+            this.#d.turnInfoUi({ turn, round });
             if (this.#turn === 'p') {
-                this.#pTimesPlayed++
+                this.#pTimesPlayed++;
                 // await player to click and attack a square
                 await this.#playerAttack(this.#bBoard, this.#bBoardUi);
                 // if it's bot's ships are all sunk then player won
@@ -99,6 +102,9 @@ export default class Game {
                 this.#bTimesPlayed++;
                 // bot choose and attack randomly
                 this.#b.randomAttack(this.#pBoard);
+                await new Promise((resolve) => {
+                    setTimeout(resolve, 500);
+                });
                 this.#d.refreashBoard(this.#pBoardUi);
                 // if player's ships are all sunk then bot won
                 if (this.#pBoard.isAllSunk()) {
@@ -122,10 +128,13 @@ export default class Game {
         this.#d.insertShipUi();
         // it'll verify each 100ms, if player has placed its five ships as well as bot (but bot doesn't count kkk)
         await new Promise((resolve) => {
-            this.#playerDeploy();
+            this.#playerDeployUi();
             this.#b.randomDeploy();
             const interval = setInterval(() => {
-                console.log(this.#pBoard.ships.length, this.#bBoard.ships.length);
+                console.log(
+                    this.#pBoard.ships.length,
+                    this.#bBoard.ships.length
+                );
                 if (
                     this.#p.board.ships.length === 5 &&
                     this.#b.board.ships.length === 5
@@ -145,7 +154,10 @@ export default class Game {
             const missCount = this.#bBoard.missedHits.length;
             const interval = setInterval(() => {
                 // if they miss an attack, they're turn should be finished
-                if (this.#bBoard.missedHits.length > missCount || this.#bBoard.isAllSunk()) {
+                if (
+                    this.#bBoard.missedHits.length > missCount ||
+                    this.#bBoard.isAllSunk()
+                ) {
                     clearInterval(interval);
                     resolve();
                 }
@@ -153,8 +165,9 @@ export default class Game {
         });
     }
 
-    #playerDeploy() {
-        this.#d.boardDragUi(this.#pBoardUi);
+    #playerDeployUi() {
+        // add EventListeners to allow user to drag ships
+        if (this.#firstGameLoaded) this.#d.boardDragUi(this.#pBoardUi);
     }
 
     // this is the function that validates if player attack is valid as well as the one that accept it
